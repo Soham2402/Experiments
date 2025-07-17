@@ -1,0 +1,9 @@
+version: "3.9"
+
+services:
+  goapp:
+    build: .
+    container_name: servit
+    # optional: if you want to see the output in your terminal
+    stdin_open: true
+    tty: true
