@@ -1,69 +1,61 @@
 #!/bin/bash
 
-set -e  # Exit immediately if a command fails
-set -u  # Treat unset variables as error
-set -o pipefail
-
-echo "🔧 Starting Neovim configuration setup using jdhao/nvim-config..."
-
-# ---- 1. Install system dependencies ----
-echo "📦 Installing required system packages..."
+# Update system packages
 sudo apt update
-sudo apt install -y curl git unzip ripgrep python3-pip nodejs npm fd-find software-properties-common
 
-# Ensure `fd` is accessible as expected by Telescope
-mkdir -p ~/.local/bin
-if ! command -v fd &> /dev/null; then
-    echo "🔗 Linking fdfind to fd..."
-    ln -sf "$(which fdfind)" ~/.local/bin/fd
-    echo 'export PATH="$HOME/.local/bin:$PATH"' >> ~/.bashrc
-    export PATH="$HOME/.local/bin:$PATH"
-fi
+# Install essential dependencies
+sudo apt install -y \
+    curl \
+    wget \
+    git \
+    unzip \
+    tar \
+    gzip \
+    build-essential \
+    software-properties-common \
+    python3 \
+    python3-pip \
+    python3-venv \
+    nodejs \
+    npm \
+    ripgrep \
+    fd-find \
+    fzf \
+    tree-sitter-cli
 
-# ---- 2. Install Neovim (latest stable) ----
-if ! command -v nvim &> /dev/null || [[ "$(nvim --version | head -n1 | grep -o '[0-9]\.[0-9]\+' | head -n1)" < "0.9" ]]; then
-    echo "📥 Installing latest Neovim..."
-    sudo add-apt-repository -y ppa:neovim-ppa/unstable
-    sudo apt update
-    sudo apt install -y neovim
-fi
+# Install Neovim (latest stable version)
+# Method 1: Using snap (recommended for latest version)
+sudo snap install nvim --classic
 
-# ---- 3. Install pynvim for Python and Node.js support ----
-echo "🧠 Installing pynvim for Python and Node.js..."
-pip3 install --user pynvim
-npm install -g neovim
+# Alternative Method 2: Using AppImage (if snap is not available)
+# curl -LO https://github.com/neovim/neovim/releases/latest/download/nvim.appimage
+# chmod u+x nvim.appimage
+# sudo mv nvim.appimage /usr/local/bin/nvim
 
-# ---- 4. Backup any existing nvim config ----
-echo "📁 Backing up old Neovim config..."
-CONFIG_DIR="$HOME/.config/nvim"
-BACKUP_DIR="$HOME/.config/nvim_backup_$(date +%s)"
-if [ -d "$CONFIG_DIR" ]; then
-    mv "$CONFIG_DIR" "$BACKUP_DIR"
-    echo "🗃️  Existing config moved to $BACKUP_DIR"
-fi
+# Alternative Method 3: Using apt (might be older version)
+# sudo apt install -y neovim
 
-# ---- 5. Clone jdhao/nvim-config ----
-echo "🔻 Cloning jdhao/nvim-config..."
-git clone https://github.com/jdhao/nvim-config.git "$CONFIG_DIR"
+# Install language servers and formatters
+# Python
+pip3 install --user pynvim black isort flake8 mypy
 
-# ---- 6. Open Neovim to install plugins via packer ----
-echo "🚀 Launching Neovim to install plugins..."
-nvim --headless +PackerSync +qall
+# Node.js packages for LSP
+sudo npm install -g \
+    pyright \
+    typescript \
+    typescript-language-server \
+    vscode-langservers-extracted \
+    yaml-language-server \
+    bash-language-server \
+    dockerfile-language-server-nodejs
 
-# ---- 7. Treesitter update (syntax highlighters) ----
-echo "🌲 Updating Treesitter parsers..."
-nvim --headless +TSUpdate +qall
+# Install additional tools
+# LaTeX support (if needed)
+# sudo apt install -y texlive-full latexmk
 
-# ---- 8. LSP installation via Mason ----
-echo "🛠️ Setting up Mason LSP registry (manual steps recommended next)..."
-echo "➡️ Open Neovim and run ':Mason' to install LSP servers for your languages."
+# Install ripgrep alternative name
+sudo ln -sf /usr/bin/fdfind /usr/local/bin/fd
 
-# ---- 9. Final cleanup and summary ----
-echo -e "\n✅ Neovim setup is complete with jdhao/nvim-config!"
-echo "📂 Config installed at: $CONFIG_DIR"
-echo "💡 Open Neovim and try commands like:"
-echo "    - ;ff  → find files"
-echo "    - ;fg  → live grep"
-echo "    - gd   → go to definition"
-echo "    - :Mason → install LSPs"
-echo -e "\nHappy hacking! 🚀"
+echo "Prerequisites installed successfully!"
+echo "Neovim version:"
+nvim --version
