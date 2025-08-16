@@ -1,0 +1,62 @@
+@import "tailwindcss";
+
+/* Bloom filter animations */
+@keyframes flashYellow {
+  0%   { background: #fde68a; box-shadow: 0 0 0 2px #f59e0b inset; }
+  100% { background: inherit; box-shadow: none; }
+}
+.flash {
+  animation: flashYellow 350ms ease-in-out;
+}
+
+@keyframes bloomSettle {
+  0%   { background: #fde68a; color: #374151; }
+  100% { background: #22c55e; color: #ffffff; }
+}
+.set-anim {
+  animation: bloomSettle 600ms ease-out forwards;
+}
+
+
+#root {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 2rem;
+  text-align: center;
+}
+
+.logo {
+  height: 6em;
+  padding: 1.5em;
+  will-change: filter;
+  transition: filter 300ms;
+}
+.logo:hover {
+  filter: drop-shadow(0 0 2em #646cffaa);
+}
+.logo.react:hover {
+  filter: drop-shadow(0 0 2em #61dafbaa);
+}
+
+@keyframes logo-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  a:nth-of-type(2) .logo {
+    animation: logo-spin infinite 20s linear;
+  }
+}
+
+.card {
+  padding: 2em;
+}
+
+.read-the-docs {
+  color: #888;
+}
