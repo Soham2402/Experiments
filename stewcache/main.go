@@ -18,12 +18,11 @@ import (
 // It demonstrates the basic usage of the Stew cache.
 func main() {
 	// Create a new instance of the Stew cache
-	newStew := stew.CreateStew()
-	config := stew.NewConfig(
+	newStew := stew.CreateStew(
 		stew.WithBackupData(true),
 		stew.WithBackupInterval(1*time.Minute),
 	)
-	newStew.Config = *config
+
 	// Ensure resources are cleaned up when we're done
 	defer newStew.Close()
 

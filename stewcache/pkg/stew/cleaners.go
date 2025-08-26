@@ -39,3 +39,21 @@ func (s *Stew) clean() {
 		}
 	}
 }
+
+
+
+func (s *Stew) RestartDishwasher(newInterval time.Duration) {
+	// signal the old dishwasher to stop
+	close(s.stopCH)
+	s.wg.Wait() // wait for old goroutine to exit
+
+	// create a new stop channel
+	s.stopCH = make(chan struct{})
+
+	// update config
+	s.Config.Interval = newInterval
+
+	// spin up new goroutine
+	s.wg.Add(1)
+	go s.dishwasher(newInterval)
+}

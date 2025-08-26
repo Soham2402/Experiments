@@ -12,12 +12,35 @@ import (
 //
 //	cache := CreateStew()
 //	defer cache.Close()
-func CreateStew() *Stew {
+// func CreateStew() *Stew {
+// 	gc := make(GlobalCache)
+// 	stopCH := make(chan struct{})
+// 	new_stew := Stew{GlobalCache: gc, stopCH: stopCH}
+// 	new_stew.wg.Add(1)
+// 	go new_stew.dishwasher(1 * time.Second)
+// 	return &new_stew
+// }
+
+
+func CreateStew(opts ...Option) *Stew {
 	gc := make(GlobalCache)
 	stopCH := make(chan struct{})
-	new_stew := Stew{GlobalCache: gc, stopCH: stopCH}
+
+	// build config with defaults
+	cfg := defaultConfig()
+	for _, opt := range opts {
+		opt(cfg)
+	}
+
+	new_stew := Stew{
+		GlobalCache: gc,
+		stopCH:      stopCH,
+		Config:      *cfg,
+	}
+
 	new_stew.wg.Add(1)
 	go new_stew.dishwasher(1 * time.Second)
+
 	return &new_stew
 }
 
